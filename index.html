@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Growth Level — Learning & Career Dashboard</title>
+<style>
+:root{--bg:#f4f6fb;--panel:#fff;--ink:#172033;--muted:#657089;--line:#e4e8f0;--accent:#4f46e5;--accent2:#0f9d82;--soft:#eef2ff;--warn:#f59e0b}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+header{background:linear-gradient(120deg,#24265f,#4f46e5);color:white;padding:28px 20px 34px}
+.wrap{max-width:1180px;margin:auto;padding:0 18px}
+.top{display:flex;justify-content:space-between;gap:16px;align-items:center;flex-wrap:wrap}
+h1{margin:0;font-size:clamp(25px,4vw,36px);letter-spacing:-.6px}header p{color:#e0e4ff;margin:7px 0 0}
+button,input,select,textarea{font:inherit}button{border:0;border-radius:10px;padding:10px 14px;background:var(--accent);color:#fff;font-weight:650;cursor:pointer}button.secondary{background:#eef0ff;color:#3730a3}button.ghost{background:transparent;border:1px solid #ffffff80;color:#fff}button.danger{background:#fff0f0;color:#b42318}
+main{padding:22px 0 40px}.datebar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:18px}.datebar input{background:#fff;border:1px solid var(--line);padding:10px;border-radius:10px}
+.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:16px}.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:18px;box-shadow:0 4px 18px #1e2a4a08}.metric{grid-column:span 3}.wide{grid-column:span 8}.side{grid-column:span 4}.full{grid-column:span 12}
+.kicker{font-size:12px;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);font-weight:750}.big{font-size:30px;font-weight:800;letter-spacing:-1px;margin-top:4px}.sub{color:var(--muted);font-size:13px}.progress{height:9px;background:#edf0f6;border-radius:99px;overflow:hidden;margin-top:12px}.progress span{display:block;height:100%;background:var(--accent2);width:0%;transition:width .2s}
+h2{font-size:19px;margin:0 0 13px}h3{font-size:15px;margin:0 0 8px}.sectionhead{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.task{display:grid;grid-template-columns:22px minmax(130px,1fr) 100px;gap:10px;align-items:start;padding:12px 0;border-bottom:1px solid var(--line)}.task:last-child{border-bottom:0}.task input[type=checkbox]{width:18px;height:18px;margin-top:3px;accent-color:var(--accent2)}.task label{font-weight:650}.task small{display:block;color:var(--muted);font-weight:400;margin-top:3px}.task select{width:100%;border:1px solid var(--line);border-radius:8px;padding:7px;background:#fff}.task.done label{text-decoration:line-through;color:#748096}
+.fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.field{display:flex;flex-direction:column;gap:5px}.field label{font-size:13px;font-weight:700;color:#3b455c}.field input,.field select,.field textarea{width:100%;padding:10px;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--ink)}textarea{min-height:82px;resize:vertical}
+.subject{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}.subject:last-child{border-bottom:0}.pill{font-size:12px;border-radius:99px;padding:4px 9px;background:var(--soft);color:#3730a3;font-weight:750}
+.daygrid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}.day{padding:9px 4px;border:1px solid var(--line);border-radius:9px;text-align:center;background:#fff;cursor:pointer;min-height:57px}.day strong{display:block;font-size:14px}.day span{font-size:11px;color:var(--muted)}.day.active{outline:2px solid var(--accent);border-color:var(--accent)}.day.complete{background:#e6f7f1;border-color:#b6e7d9}.day.today{box-shadow:inset 0 -3px var(--accent)}
+.actions{display:flex;gap:8px;flex-wrap:wrap}.note{border-radius:10px;background:#f8f9ff;padding:12px;color:#4d5671;font-size:13px}
+table{border-collapse:collapse;width:100%;font-size:13px}th,td{text-align:left;padding:9px;border-bottom:1px solid var(--line)}th{color:var(--muted);font-weight:700}
+footer{color:var(--muted);text-align:center;padding:10px 0 28px;font-size:12px}
+@media(max-width:800px){.metric{grid-column:span 6}.wide,.side{grid-column:span 12}.task{grid-template-columns:22px minmax(100px,1fr) 88px}}
+@media(max-width:430px){.metric{grid-column:span 12}.fields{grid-template-columns:1fr}.card{padding:14px}.daygrid{gap:4px}.day{padding:7px 2px}}
+
+.newsgrid,.resourcegrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:12px 0}.newsitem,.resourceitem{border:1px solid var(--line);border-radius:12px;padding:12px;background:var(--panel);min-width:0}.newsitem h4{margin:0 0 7px;font-size:15px;line-height:1.4}.newsitem p{margin:6px 0}.newsitem small{color:var(--muted)}.resourcegrid a,.resourceitem a{display:block;border:1px solid var(--line);border-radius:10px;padding:11px;text-decoration:none;color:var(--accent);background:var(--panel)}.resourcegrid a:hover,.resourceitem a:hover{text-decoration:underline}.buttonlink{display:inline-flex;align-items:center;border:1px solid var(--line);border-radius:9px;padding:8px 12px;color:var(--accent);text-decoration:none}.quizq{padding:12px;border:1px solid var(--line);border-radius:10px;margin:10px 0}.quizq label{display:block;margin:7px 0}.quizq input{margin-right:7px}@media(max-width:650px){.newsgrid,.resourcegrid{grid-template-columns:1fr}}
+
+</style>
+</head>
+<body>
+<header><div class="wrap top"><div><h1>Growth Level</h1><p>Your personal learning, practice, world knowledge and career development system.</p></div><div style="min-width:240px;background:#ffffff18;border:1px solid #ffffff35;border-radius:14px;padding:12px 16px">
+<div style="font-size:12px;color:#e0e4ff;text-transform:uppercase;letter-spacing:.08em">Current date & time</div>
+<div id="liveClock" style="font-size:23px;font-weight:800;font-variant-numeric:tabular-nums">--:--:--</div>
+<div id="liveDate" style="font-size:13px;color:#e0e4ff">Loading date…</div>
+</div>
+<div class="actions"><button class="ghost" id="enableRemindersBtn">Enable reminders</button><button class="ghost" id="exportBtn">Export backup</button><button class="ghost" id="importBtn">Import backup</button><input id="importFile" type="file" accept="application/json" hidden></div></div></header>
+<main class="wrap">
+  <div class="datebar"><strong>Study date</strong><input type="date" id="datePicker"><button class="secondary" id="todayBtn">Go to today</button><span class="sub" id="dayLabel"></span></div>
+
+  <section class="card full" style="margin-bottom:16px" id="timeMapSection">
+    <div class="sectionhead"><h2>Full Daily Time Map</h2><span class="pill">India time · IST</span></div>
+    <p class="sub">Follow this time map as the default routine. Each block says what to do and what “done” looks like. Breaks and meals are part of the plan, not lost study time. Change the times to fit your life, but keep the sequence and focus blocks.</p>
+    <div style="overflow-x:auto"><table><thead><tr><th>Time (IST)</th><th>Block</th><th>What to do</th><th>Daily output</th></tr></thead><tbody>
+    <tr><td>8:00–8:15 AM</td><td>Setup & recall</td><td>Open tracker, review yesterday's mistakes, choose today's target.</td><td>One written target</td></tr>
+    <tr><td>8:15–9:30 AM</td><td>Mathematics</td><td>Learn one Class 6 foundation concept; worked examples (20 min), guided practice (25 min), independent problems (20 min), corrections (10 min).</td><td>8–12 attempted problems and corrected errors</td></tr>
+    <tr><td>9:30–9:45 AM</td><td>Break</td><td>Walk, stretch, water; avoid starting another lesson.</td><td>Return refreshed</td></tr>
+    <tr><td>9:45–10:45 AM</td><td>Java concept</td><td>Read/watch one lesson, type examples yourself, trace code on paper, explain the idea aloud.</td><td>One runnable example + notes</td></tr>
+    <tr><td>10:45–11:00 AM</td><td>Break</td><td>Rest eyes and move around.</td><td>Ready for practice</td></tr>
+    <tr><td>11:00–11:45 AM</td><td>Coding practice</td><td>Attempt 1–2 problems without copying. Test normal, edge and empty/small inputs; review solution only after a genuine attempt.</td><td>Problem solution + test cases</td></tr>
+    <tr><td>11:45 AM–12:05 PM</td><td>Typing</td><td>5 min accuracy warm-up, 10 min focused practice, 5 min timed test.</td><td>Record WPM and accuracy</td></tr>
+    <tr><td>12:05–1:00 PM</td><td>Lunch & rest</td><td>Take a real break.</td><td>Return with energy</td></tr>
+    <tr><td>1:00–1:30 PM</td><td>English communication</td><td>10 min listening/shadowing, 10 min speaking or reading aloud, 10 min vocabulary/writing.</td><td>60–120 second voice note or short paragraph</td></tr>
+    <tr><td>1:30–2:00 PM</td><td>DSA</td><td>Connect DSA to Java: dry-run the day's pattern, write time/space complexity, solve one small variation.</td><td>One dry run + complexity note</td></tr>
+    <tr><td>2:00–2:15 PM</td><td>Break</td><td>Rest away from the screen.</td><td>—</td></tr>
+    <tr><td>2:15–2:45 PM</td><td>Career technology</td><td>Rotate Git/GitHub, SQL, project building, resume/portfolio and interview preparation by week.</td><td>One command/query/project change</td></tr>
+    <tr><td>2:45–2:55 PM</td><td>Save & backup</td><td>Mark completion, write what was hard, export JSON backup regularly.</td><td>Tracker updated</td></tr>
+    <tr><td>6:30–6:50 PM</td><td>Math revision</td><td>Redo 2 missed questions without notes; check and explain the correction.</td><td>Two corrected problems</td></tr>
+    <tr><td>6:50–7:15 PM</td><td>Java revision</td><td>Recreate a small code example from memory and fix one bug or add one test.</td><td>Code recalled from memory</td></tr>
+    <tr><td>8:00–8:20 PM</td><td>Speaking & daily review</td><td>Explain what you learned in plain English; rate focus; choose tomorrow's first task.</td><td>2-minute spoken summary + next target</td></tr>
+    </tbody></table></div>
+    <p class="note">Focus rule: one main lesson per block; active practice matters more than watching many videos. If you miss a block, resume at the next one—do not try to double the whole workload.</p>
+  </section>
+  <section class="card full" style="margin-bottom:16px">
+    <div class="sectionhead"><h2>Today's learning library</h2><span class="pill" id="curriculumDay">Day 1 of 30</span></div>
+    <p class="sub">Choose a subject at the top. The selected study date controls the day-wise topic list. Open the linked lessons and practise each concept.</p>
+    <nav id="subjectTabs" class="actions" aria-label="Study categories" style="margin:12px 0"></nav>
+    <div id="curriculumPanel"></div>
+  </section>
+  <section class="card full" style="margin-bottom:16px" id="newsSection">
+    <div class="sectionhead"><h2>World Knowledge & Live News</h2><span class="pill" id="newsStatus">Not loaded</span></div>
+    <p class="sub">Fetch recent headlines from online RSS feeds through a public RSS conversion service. Headlines are live only when a fetch succeeds; results show their source and publication date. This public service may be rate-limited.</p>
+    <div class="actions" style="margin:10px 0"><select id="newsCategory" aria-label="News category"><option value="world">World news</option><option value="science">Science & space</option><option value="technology">Technology & innovation</option><option value="math">Mathematics research</option><option value="sports">Sports</option></select><button id="loadNewsBtn">Fetch latest headlines</button><a class="buttonlink" href="https://news.google.com/" target="_blank" rel="noopener noreferrer">Open Google News</a></div>
+    <p class="sub" id="newsUpdated" aria-live="polite">Choose a category and fetch online headlines.</p><div id="newsResults" class="newsgrid"><div class="note">No news loaded yet. Press “Fetch latest headlines” to request current articles. If the feed service is unavailable, use the source links below.</div></div>
+    <h3>Trusted source pages</h3><div class="resourcegrid"><a href="https://www.nasa.gov/news/" target="_blank" rel="noopener noreferrer">NASA News</a><a href="https://home.cern/news" target="_blank" rel="noopener noreferrer">CERN News</a><a href="https://www.esa.int/Newsroom" target="_blank" rel="noopener noreferrer">ESA Newsroom</a><a href="https://www.ams.org/news" target="_blank" rel="noopener noreferrer">American Mathematical Society</a><a href="https://arxiv.org/list/math/recent" target="_blank" rel="noopener noreferrer">Recent mathematics papers</a><a href="https://olympics.com/" target="_blank" rel="noopener noreferrer">Olympics</a><a href="https://www.bbc.com/sport" target="_blank" rel="noopener noreferrer">BBC Sport</a><a href="https://www.reuters.com/world/" target="_blank" rel="noopener noreferrer">Reuters World</a></div>
+  </section>
+  <section class="card full" style="margin-bottom:16px" id="resourceSection">
+    <div class="sectionhead"><h2>Learning Resource Library</h2><span class="pill">Curated links</span></div>
+    <p class="sub">Free-first selection: start with the links marked “Free”. Official documentation, public education resources and free practice sites are prioritised. Some platforms offer optional paid products or may limit features; never pay to continue this plan—use the alternative free source listed for that topic.</p>
+    <input id="resourceSearch" placeholder="Search resources (e.g. fractions, Java arrays, SQL, English)" aria-label="Search learning resources" style="width:100%;margin:8px 0 14px">
+    <div id="resourceResults" class="resourcegrid"></div>
+  </section>
+  <section class="card full" style="margin-bottom:16px" id="quizSection">
+    <div class="sectionhead"><h2>Daily Knowledge Check</h2><span class="pill" id="quizProgress">Not attempted</span></div>
+    <p class="sub">A short built-in practice check. Questions are starter examples, not a full diagnostic exam. Choose an answer to get immediate feedback and track your result.</p>
+    <div id="quizArea"></div><div class="actions" style="margin-top:12px"><button id="gradeQuizBtn">Check answers</button><button class="secondary" id="resetQuizBtn">Try again</button></div><p id="quizFeedback" class="sub" aria-live="polite"></p>
+  </section>
+  <section class="card full" style="margin-bottom:16px">
+    <div class="sectionhead"><h2>Focus season timer</h2><span class="pill" id="seasonStatus">Ready</span></div>
+    <p class="sub">Name each focused study session a “season”. When its timer ends, the tracker rings and announces that it is time to move to the next season.</p>
+    <div class="fields">
+      <div class="field"><label for="seasonName">Current season name</label><input id="seasonName" value="Mathematics focus season" maxlength="80"></div>
+      <div class="field"><label for="nextSeasonName">Next season name</label><input id="nextSeasonName" value="Java learning season" maxlength="80"></div>
+      <div class="field"><label for="seasonMinutes">Season duration (minutes)</label><input id="seasonMinutes" type="number" min="1" max="600" value="45"></div>
+      <div class="field"><label>Time remaining</label><div id="seasonCountdown" class="big" style="font-size:26px">45:00</div></div>
+    </div>
+    <div class="actions" style="margin-top:12px"><button id="startSeasonBtn">Start season</button><button class="secondary" id="pauseSeasonBtn">Pause</button><button class="secondary" id="resetSeasonBtn">Reset</button></div>
+    <p class="sub" id="seasonMessage" aria-live="polite">Set your session names and duration, then start.</p>
+  </section>
+  <section class="card full" style="margin-bottom:16px">
+    <div class="sectionhead"><h2>Midnight backup</h2><span class="pill" id="backupStatus">Automatic download off</span></div>
+    <p>Enable a daily backup download at 12:00 AM. The page must remain open and your computer awake for it to run. A standalone HTML file cannot securely send email by itself; automatic email delivery needs a connected email service or a small hosted backend.</p>
+    <div class="fields"><div class="field"><label for="autoBackupToggle">Daily midnight backup</label><select id="autoBackupToggle"><option value="off">Off</option><option value="on">On — download JSON at midnight</option></select></div><div class="field"><label for="backupEmail">Email address for a future email integration</label><input id="backupEmail" type="email" placeholder="you@example.com"></div></div>
+    <div class="actions" style="margin-top:12px"><button id="saveBackupSettings" class="secondary">Save backup settings</button><button id="backupNowBtn">Download backup now</button></div>
+    <p class="sub" id="backupHelp" aria-live="polite">Backups are named “Growth Level” and include your saved tracker data.</p>
+  </section>
+  <section class="grid">
+    <div class="card full">
+      <div class="sectionhead"><h2>Study-time reminders</h2><span class="pill" id="reminderStatus">Reminders off</span></div>
+      <p class="sub">Turn on browser notifications to receive a message when a study session begins. Keep this page open for reminders; browser settings may also need to allow notifications.</p>
+      <div class="fields">
+        <div class="field"><label for="remindersToggle">Reminders</label><select id="remindersToggle"><option value="off">Off</option><option value="on">On — notify me at study times</option></select></div>
+        <div class="field"><label for="soundToggle">Sound alert</label><select id="soundToggle"><option value="on">On</option><option value="off">Off</option></select></div>
+      </div>
+      <div class="note" style="margin-top:12px"><strong>Reminder times:</strong> 8:15 Maths · 9:45 Java · 11:00 Coding · 11:45 Typing · 1:00 English · 1:30 DSA · 2:15 Career skills · 6:30 Revision · 8:00 Speaking and review. Times use your computer's local time.</div>
+      <div class="actions" style="margin-top:12px"><button id="testReminderBtn">Test notification</button><button class="secondary" id="testSoundBtn">Test sound</button></div>
+      <p class="sub" id="reminderHelp" aria-live="polite"></p>
+    </div>
+    <div class="card metric"><div class="kicker">Today's score</div><div class="big" id="todayScore">0%</div><div class="sub" id="todayScoreSub">0 of 7 tasks complete</div><div class="progress"><span id="todayBar"></span></div></div>
+    <div class="card metric"><div class="kicker">30-day progress</div><div class="big" id="monthScore">0%</div><div class="sub">Average daily task completion</div><div class="progress"><span id="monthBar"></span></div></div>
+    <div class="card metric"><div class="kicker">Current level</div><div class="big" id="level">Starter</div><div class="sub" id="levelSub">Start with one completed task</div></div>
+    <div class="card metric"><div class="kicker">Consistency streak</div><div class="big" id="streak">0 days</div><div class="sub">Days with at least 70% completion</div></div>
+    <div class="card wide">
+      <div class="sectionhead"><h2 id="tasksTitle">Today's plan</h2><span class="pill" id="completedPill">0 / 7 complete</span></div>
+      <div id="taskList"></div>
+      <div class="note" style="margin-top:12px">How to use: check a task only when you have done it. Use the rating to score the quality of your effort. Your score and progress level update automatically and are saved in this browser.</div>
+    </div>
+    <div class="card side">
+      <h2>Daily subject scores</h2>
+      <div class="sub" style="margin-bottom:10px">Rate each area from 0 to 5. These ratings add context to your completion score.</div>
+      <div id="subjectRatings"></div>
+      <div class="fields" style="margin-top:14px">
+        <div class="field"><label for="mathScore">Maths correct / attempted</label><input id="mathScore" placeholder="e.g. 8/10"></div>
+        <div class="field"><label for="wpm">Typing speed (WPM)</label><input id="wpm" type="number" min="0" placeholder="e.g. 25"></div>
+        <div class="field"><label for="accuracy">Typing accuracy (%)</label><input id="accuracy" type="number" min="0" max="100" placeholder="e.g. 96"></div>
+        <div class="field"><label for="focus">Focused study time (minutes)</label><input id="focus" type="number" min="0" placeholder="e.g. 210"></div>
+      </div>
+    </div>
+    <div class="card full">
+      <div class="sectionhead"><h2>Daily reflection</h2><span class="sub">A little reflection makes tomorrow easier.</span></div>
+      <div class="fields">
+        <div class="field"><label for="win">What went well today?</label><textarea id="win" placeholder="One thing I completed or understood..."></textarea></div>
+        <div class="field"><label for="improve">What was difficult / what will I improve?</label><textarea id="improve" placeholder="One mistake, distraction or lesson..."></textarea></div>
+        <div class="field"><label for="tomorrow">Tomorrow's most important task</label><input id="tomorrow" placeholder="e.g. Solve 8 fraction problems"></div>
+        <div class="field"><label for="energy">Energy level</label><select id="energy"><option value="">Choose...</option><option>1 — Very low</option><option>2 — Low</option><option>3 — Okay</option><option>4 — Good</option><option>5 — Excellent</option></select></div>
+      </div>
+      <div class="actions" style="margin-top:14px"><button id="saveBtn">Save today's progress</button><button class="secondary" id="resetDayBtn">Reset this day</button></div>
+      <p class="sub" id="saveStatus" aria-live="polite"></p>
+    </div>
+    <div class="card full">
+      <div class="sectionhead"><h2>30-day calendar</h2><span class="sub">Select any day to view or edit its record.</span></div>
+      <div class="daygrid" id="calendar"></div>
+    </div>
+    <div class="card full">
+      <div class="sectionhead"><h2>Progress history</h2><span class="sub">Your saved scores by date</span></div>
+      <div style="overflow-x:auto"><table><thead><tr><th>Date</th><th>Completed</th><th>Daily score</th><th>Level</th><th>Study min</th><th>Typing WPM</th></tr></thead><tbody id="history"></tbody></table></div>
+    </div>
+  </section>
+</main>
+<footer>Growth Level · Progress is stored in this browser. Live news requires a working internet connection and the external RSS conversion service. Automatic email backups and cross-device sync require a separately configured backend.</footer>
+<script>
+
+const curriculum = {
+ math:{
+  title:"Mathematics — rebuild from Class 6 foundations",
+  topics:[
+   ["Whole numbers, place value, number line","Factors, multiples, divisibility rules","Prime numbers, prime factorisation, HCF and LCM","Integers and operations","Fractions: equivalent fractions and simplification","Fraction addition and subtraction","Fraction multiplication and division","Decimals: place value and conversions","Decimal operations and word problems","Revision test: numbers, fractions, decimals"],
+   ["Ratio and proportion","Unitary method and rates","Percentages: convert fraction/decimal/percent","Percentage increase/decrease and discount","Basic algebra: variables and expressions","Simplifying expressions and substitution","Simple equations","Geometry: lines, angles and angle types","Triangles and quadrilaterals","Revision test: ratio, percent, algebra, geometry"],
+   ["Perimeter of common shapes","Area: rectangles, squares and triangles","Circles: radius, diameter, circumference idea","Mensuration word problems","Integers and rational numbers review","Powers, exponents and order of operations","Data handling: tables and bar charts","Mean, median, mode and range","Probability basics and simple experiments","Mixed practice test and error review"],
+  ],
+  resources:[["Khan Academy — Grade 6 Maths","https://www.khanacademy.org/math/cc-sixth-grade-math"],["Khan Academy — arithmetic","https://www.khanacademy.org/math/arithmetic"],["Math Antics (YouTube)","https://www.youtube.com/@mathantics"],["The Organic Chemistry Tutor (YouTube)","https://www.youtube.com/@TheOrganicChemistryTutor"]]
+ },
+ java:{
+  title:"Java — arrays first, then build toward DSA",
+  topics:[
+   ["1D arrays: declaration, creation, indexing, length","Traverse arrays with for and enhanced for loops","Sum, average, minimum and maximum","Linear search and index reporting","Reverse an array in-place","Second-largest distinct element","Count frequencies and detect duplicates","Sort an array using built-in Arrays.sort","Merge two sorted arrays","Review: solve 5 one-dimensional array problems"],
+   ["2D arrays: declaration, rows, columns and traversal","Matrix input/output and row/column sums","Diagonal sums and matrix trace","Transpose a matrix","Matrix addition and multiplication concept","Find an element in a matrix","Jagged arrays and nested loops","Rotate a square matrix concept","Spiral traversal concept","Review: solve 4 matrix problems"],
+   ["Two pointers in Java arrays","Prefix sums and range sum queries","Sliding window: fixed window","Kadane's maximum subarray sum","HashMap frequency counting","Binary search and boundary cases","Sorting review: selection, insertion, merge-sort idea","ArrayList and common Collections methods","Time/space complexity basics","Review: 3 mixed array-pattern problems"],
+  ],
+  resources:[["Dev.java — Learn Java","https://dev.java/learn/"],["Oracle Java Tutorials","https://docs.oracle.com/javase/tutorial/"],["Bro Code (YouTube)","https://www.youtube.com/@BroCodez"],["Telusko (YouTube)","https://www.youtube.com/@Telusko"],["Java Brains (YouTube)","https://www.youtube.com/@Java.Brains"]]
+ },
+ coding:{
+  title:"Independent coding practice",
+  topics:[
+   ["Write 3 array traversal exercises without copying","Solve sum/min/max and explain the loop","Linear search: present and absent values","Reverse array with two pointers","Find second-largest; test duplicates","Frequency count using nested loops or map","Remove duplicates from a sorted array","Merge sorted arrays","Test empty, one-element and duplicate inputs","Redo your two hardest problems from memory"],
+   ["Matrix row/column sums","Diagonal sum and transpose","Search a matrix","Matrix rotation or spiral traversal","Handle rectangular and jagged matrices","Write clear methods for matrix operations","Add input validation and meaningful names","Test matrix edge cases","Solve 2 matrix problems timed","Review code and explain complexity"],
+   ["Two-sum using brute force, then HashMap","Prefix-sum range query","Fixed-size sliding window","Maximum subarray sum","Binary search first/last occurrence","Sort and compare algorithm behaviour","Use ArrayList safely","Refactor repeated logic into methods","Solve 2 mixed problems without hints","Mini-project: console-based array analyser"],
+  ],
+  resources:[["LeetCode — Arrays","https://leetcode.com/tag/array/"],["HackerRank Java","https://www.hackerrank.com/domains/java"],["freeCodeCamp (YouTube)","https://www.youtube.com/@freecodecamp"],["NeetCode (YouTube)","https://www.youtube.com/@NeetCode"]]
+ },
+ typing:{
+  title:"Typing — accuracy first, then speed",
+  topics:Array.from({length:30},(_,i)=>[["Baseline test: record WPM and accuracy","Home row: F J and ASDF JKL;","Home row accuracy, no speed pressure","Top row: QWERTYUIOP","Bottom row: ZXCVBNM","Home/top row transitions","Home/bottom row transitions","Common English words","Capital letters and Shift","Review: 1-minute accuracy test"][i%10],["Numbers row and punctuation","Capitalisation and punctuation","Short sentences with spaces","Common letter pairs and words","Copy a short paragraph accurately","Practise brackets, symbols and digits","Focus on weak keys","3-minute steady typing test","Correct mistakes without rushing","Weekly test: compare with baseline"][i%10],["Longer sentences","Paragraph copying","Code punctuation: () {} [] ;","Common Java keywords and symbols","Numbers, operators and indentation","Alternate accuracy and speed drills","Practise without looking at keyboard","5-minute typing test","Review errors and weak keys","Final test: compare WPM and accuracy"][i%10]][Math.floor(i/10)]) ,
+  resources:[["TypingClub","https://www.typingclub.com/"],["Keybr","https://www.keybr.com/"],["Monkeytype","https://monkeytype.com/"],["Typing.com","https://www.typing.com/"]]
+ },
+ english:{
+  title:"English communication — listening, speaking, vocabulary",
+  topics:Array.from({length:30},(_,i)=>["Introduce yourself for 60 seconds","Daily routine: speak for 2 minutes","Learn 5 useful words and make sentences","Present simple vs present continuous","Listen and shadow a short clip","Ask and answer 5 everyday questions","Describe a person or place","Past tense: tell yesterday's story","Pronunciation: slow, clear sentences","Record yourself; note 2 improvements","Explain a maths concept in simple English","Future plans using will/going to","Articles: a, an, the","Prepositions in everyday sentences","Listen and summarise a short video","Give an opinion and one reason","Tell a story with beginning/middle/end","Polite requests and clarification","Explain your Java array code aloud","Practice a mock interview introduction","Present perfect basics","Compare two choices with reasons","Read aloud for 5 minutes","Summarise a short article in 5 sentences","Explain a problem and its solution","Speak for 3 minutes without stopping","Practice common job interview questions","Describe your project in simple English","Record a 3-minute progress update","Review recordings and plan next month"][i]),
+  resources:[["British Council — Speaking","https://learnenglish.britishcouncil.org/skills/speaking"],["BBC Learning English","https://www.bbc.co.uk/learningenglish"],["VOA Learning English","https://learningenglish.voanews.com/"],["Speak English With Vanessa (YouTube)","https://www.youtube.com/@SpeakEnglishWithVanessa"],["BBC Learning English (YouTube)","https://www.youtube.com/@bbclearningenglish"]]
+ },
+ dsa:{
+  title:"DSA — connect each concept to Java arrays",
+  topics:Array.from({length:30},(_,i)=>["Array traversal and complexity","Linear search","Reverse array / two pointers","Find min, max and second-largest","Frequency counting","Duplicates and unique elements","Sorting and sorted arrays","Merge sorted arrays","Matrix traversal","Matrix row and column sums","Transpose and diagonals","Binary search prerequisites","Binary search implementation","First and last occurrence","Prefix sums","Range sum queries","Fixed-size sliding window","Maximum sum subarray of size k","Kadane's algorithm","HashMap and Two Sum","Time complexity: O(1), O(n), O(n²)","Space complexity and trade-offs","Selection/insertion/merge sort overview","ArrayList operations","Recursion basics and base case","Recursive array sum","Problem-solving: clarify inputs and edge cases","Solve 2 mixed problems","Timed practice: 2 easy problems","Review mistakes and explain solutions aloud"][i]),
+  resources:[["LeetCode","https://leetcode.com/problemset/"],["GeeksforGeeks — DSA","https://www.geeksforgeeks.org/data-structures/"],["VisuAlgo","https://visualgo.net/en"],["NeetCode (YouTube)","https://www.youtube.com/@NeetCode"],["take U forward (YouTube)","https://www.youtube.com/@takeUforward"]]
+ },
+ career:{
+  title:"Career technology — Git, SQL and portfolio",
+  topics:Array.from({length:30},(_,i)=>["What Git is; install Git","git init, status, add, commit","Branches and switching branches","GitHub account and create repository","Push Java practice to GitHub","Write a useful README","SQL: tables, rows, columns, SELECT","WHERE, ORDER BY, LIMIT","AND/OR, comparison operators","INSERT, UPDATE, DELETE safely","COUNT, SUM, AVG, GROUP BY","HAVING and aggregate queries","INNER JOIN basics","LEFT JOIN and missing matches","Primary keys and foreign keys","SQL practice: 10 queries","Git commit history and meaningful messages","Debugging and reading stack traces","Clean code and naming","Project plan: array analyser","Implement menu and array operations","Add search, sorting and statistics","Test edge cases and fix bugs","Write README with features and run steps","Push finished project to GitHub","Review SQL joins and aggregates","Practice explaining project in 2 minutes","Resume basics: skills and project bullets","Common Java/DSA interview questions","Portfolio review and next 30-day goals"][i]),
+  resources:[["Git official book","https://git-scm.com/book/en/v2"],["GitHub Skills","https://skills.github.com/"],["SQLBolt interactive lessons","https://sqlbolt.com/"],["W3Schools SQL","https://www.w3schools.com/sql/"],["freeCodeCamp (YouTube)","https://www.youtube.com/@freecodecamp"]]
+ }
+};
+const categoryOrder=[["math","Mathematics"],["java","Java"],["coding","Coding practice"],["typing","Typing"],["english","English"],["dsa","DSA"],["career","Career tech"]];
+let activeCategory="math";
+function dayNumber(){let n=Math.round((new Date(selected+"T12:00:00")-new Date(start+"T12:00:00"))/86400000)+1;return Math.max(1,Math.min(30,n))}
+function renderCurriculum(){
+ const n=dayNumber(),idx=n-1,cat=curriculum[activeCategory];
+ $("curriculumDay").textContent=`Day ${n} of 30`;
+ $("subjectTabs").innerHTML=categoryOrder.map(([id,label])=>`<button type="button" class="${id===activeCategory?"":"secondary"}" data-cat="${id}">${label}</button>`).join("");
+ document.querySelectorAll("[data-cat]").forEach(b=>b.onclick=()=>{activeCategory=b.dataset.cat;renderCurriculum()});
+ let topic=cat.topics[idx]; if(Array.isArray(topic)) topic=topic.join(" · ");
+ const resources=cat.resources.map(([label,url])=>`<li><a href="${url}" target="_blank" rel="noopener noreferrer">${label}</a></li>`).join("");
+ $("curriculumPanel").innerHTML=`<h3>${cat.title}</h3><p><strong>Today's topic:</strong> ${topic}</p><h3>Concept checklist</h3><label style="display:flex;gap:9px;align-items:flex-start;margin:10px 0"><input type="checkbox" id="topicLearned" style="margin-top:5px"> I studied the concept and can explain it in my own words.</label><label style="display:flex;gap:9px;align-items:flex-start;margin:10px 0"><input type="checkbox" id="topicPractice" style="margin-top:5px"> I completed practice questions or exercises.</label><label style="display:flex;gap:9px;align-items:flex-start;margin:10px 0"><input type="checkbox" id="topicRecall" style="margin-top:5px"> I reviewed mistakes and recalled the key idea without notes.</label><h3 style="margin-top:18px">Learning websites and video channels</h3><ul>${resources}</ul><p class="sub">Tip: use one main lesson, then practise. You do not need to finish every resource today.</p>`;
+}
+
+
+
+const tasks = [
+ {id:"math",name:"Mathematics",time:"8:15–9:30 AM",desc:"Learn one concept, solve problems, check mistakes."},
+ {id:"java",name:"Java learning",time:"9:45–10:45 AM",desc:"Study one topic and explain it from memory."},
+ {id:"coding",name:"Independent coding practice",time:"11:00–11:45 AM",desc:"Solve a problem without copying a solution."},
+ {id:"typing",name:"Typing practice",time:"11:45 AM–12:05 PM",desc:"Practise accuracy, then record WPM."},
+ {id:"english",name:"English communication",time:"1:00–1:30 PM",desc:"Listen, repeat, speak aloud and review."},
+ {id:"dsa",name:"DSA practice",time:"1:30–2:00 PM",desc:"Solve a problem connected to today's Java topic."},
+ {id:"career",name:"Career technology",time:"2:15–2:45 PM",desc:"Git/GitHub, SQL or project work according to the week."}
+];
+const subjects = [{id:"math",name:"Mathematics"},{id:"java",name:"Java & coding"},{id:"dsa",name:"DSA"},{id:"english",name:"English"},{id:"typing",name:"Typing"},{id:"career",name:"Career technology"},{id:"health",name:"Exercise & sleep"}];
+const $=id=>document.getElementById(id);
+const todayISO=()=>{const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`};
+const shift=(iso,n)=>{let d=new Date(iso+"T12:00:00");d.setDate(d.getDate()+n);return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`};
+const pretty=iso=>new Date(iso+"T12:00:00").toLocaleDateString(undefined,{weekday:"short",day:"numeric",month:"short",year:"numeric"});
+const key="myGrowthTracker.v1";let data={};let selected=todayISO();let start=todayISO();
+function blank(){return {checks:{},ratings:{},mathScore:"",wpm:"",accuracy:"",focus:"",win:"",improve:"",tomorrow:"",energy:""}}
+function load(){try{data=JSON.parse(localStorage.getItem(key)||"{}");}catch{data={}};if(data._start)start=data._start;else{data._start=start;persist()}}
+function persist(){data._start=start;try{localStorage.setItem(key,JSON.stringify(data))}catch(e){$("saveStatus").textContent="Could not save in browser storage. Export your data and free browser space."}}
+function record(iso=selected){return data[iso]||(data[iso]=blank())}
+function calc(r){let count=tasks.filter(t=>r.checks[t.id]).length;return {count,score:Math.round(count/tasks.length*100)}}
+function level(score){if(score>=95)return ["Consistency Champion","Outstanding completion today"];if(score>=80)return ["Focused Builder","Strong, consistent effort"];if(score>=60)return ["Momentum Maker","Good progress—keep going"];if(score>=35)return ["Growing Learner","You're building the habit"];if(score>0)return ["Starter","Every completed task counts"];return ["Ready to Begin","Start with your first task"]}
+function renderTasks(){let r=record();$("taskList").innerHTML=tasks.map(t=>`<div class="task ${r.checks[t.id]?"done":""}"><input type="checkbox" id="check-${t.id}" ${r.checks[t.id]?"checked":""} aria-label="Complete ${t.name}"><div><label for="check-${t.id}">${t.name}</label><small>${t.time} · ${t.desc}</small></div><select id="rating-${t.id}" aria-label="${t.name} effort rating"><option value="0">Rating: 0/5</option>${[1,2,3,4,5].map(n=>`<option value="${n}" ${Number(r.ratings[t.id]||0)===n?"selected":""}>Rating: ${n}/5</option>`).join("")}</select></div>`).join("");
+tasks.forEach(t=>{ $("check-"+t.id).onchange=e=>{record().checks[t.id]=e.target.checked;persist();render()};$("rating-"+t.id).onchange=e=>{record().ratings[t.id]=Number(e.target.value);persist();renderMetrics()} }) }
+function renderRatings(){let r=record();$("subjectRatings").innerHTML=subjects.map(s=>`<div class="subject"><label for="sr-${s.id}">${s.name}</label><select id="sr-${s.id}" style="max-width:112px;border:1px solid var(--line);border-radius:8px;padding:7px;background:white"><option value="0">0 / 5</option>${[1,2,3,4,5].map(n=>`<option value="${n}" ${Number(r.ratings["sub-"+s.id]||0)===n?"selected":""}>${n} / 5</option>`).join("")}</select></div>`).join("");subjects.forEach(s=>$("sr-"+s.id).onchange=e=>{record().ratings["sub-"+s.id]=Number(e.target.value);persist()})}
+function fillFields(){let r=record();["mathScore","wpm","accuracy","focus","win","improve","tomorrow","energy"].forEach(id=>$(id).value=r[id]??"")}
+function collect(){let r=record();["mathScore","wpm","accuracy","focus","win","improve","tomorrow","energy"].forEach(id=>r[id]=$(id).value);persist()}
+function renderMetrics(){let r=record(),c=calc(r),lv=level(c.score);$("todayScore").textContent=c.score+"%";$("todayScoreSub").textContent=`${c.count} of ${tasks.length} tasks complete`;$("todayBar").style.width=c.score+"%";$("completedPill").textContent=`${c.count} / ${tasks.length} complete`;$("level").textContent=lv[0];$("levelSub").textContent=lv[1];let dates=Array.from({length:30},(_,i)=>shift(start,i));let scores=dates.map(d=>data[d]?calc(data[d]).score:null).filter(x=>x!==null);let avg=scores.length?Math.round(scores.reduce((a,b)=>a+b,0)/scores.length):0;$("monthScore").textContent=avg+"%";$("monthBar").style.width=avg+"%";let streak=0;for(let i=0;i<365;i++){let d=shift(todayISO(),-i);if(data[d]&&calc(data[d]).score>=70)streak++;else if(i===0)continue;else break}$("streak").textContent=streak+" "+(streak===1?"day":"days");$("dayLabel").textContent=pretty(selected);$("tasksTitle").textContent="Plan for "+pretty(selected)}
+function renderCalendar(){let days=Array.from({length:30},(_,i)=>shift(start,i));$("calendar").innerHTML=days.map(d=>{let r=data[d],score=r?calc(r).score:0;let complete=r&&score===100;return `<button class="day ${d===selected?"active":""} ${d===todayISO()?"today":""} ${complete?"complete":""}" data-date="${d}" aria-label="${pretty(d)} ${score}%"><strong>${new Date(d+"T12:00:00").getDate()}</strong><span>${r?score+"%":"—"}</span></button>`}).join("");document.querySelectorAll(".day").forEach(b=>b.onclick=()=>selectDate(b.dataset.date))}
+function renderHistory(){let dates=Object.keys(data).filter(d=>/^\\d{4}-\\d\\d-\\d\\d$/.test(d)&&data[d]).sort().reverse();$("history").innerHTML=dates.length?dates.map(d=>{let c=calc(data[d]),lv=level(c.score)[0];return `<tr><td>${pretty(d)}</td><td>${c.count}/${tasks.length}</td><td>${c.score}%</td><td>${lv}</td><td>${escapeHTML(data[d].focus||"—")}</td><td>${escapeHTML(data[d].wpm||"—")}</td></tr>`}).join(""):'<tr><td colspan="6" class="sub">No saved days yet. Complete your first task to begin tracking.</td></tr>'}
+function escapeHTML(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function selectDate(d){selected=d;$("datePicker").value=d;render()}
+function render(){renderTasks();renderRatings();fillFields();renderMetrics();renderCalendar();renderHistory();renderCurriculum()}
+$("datePicker").value=selected;$("datePicker").onchange=e=>{if(e.target.value)selectDate(e.target.value)};$("todayBtn").onclick=()=>selectDate(todayISO());
+$("saveBtn").onclick=()=>{collect();render();$("saveStatus").textContent="Saved locally at "+new Date().toLocaleTimeString();};
+$("resetDayBtn").onclick=()=>{if(confirm("Reset all entries for "+pretty(selected)+"? This cannot be undone unless you exported a backup.")){delete data[selected];persist();render();$("saveStatus").textContent="This day's entries were reset."}};
+$("exportBtn").onclick=()=>{collect();let blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="my-growth-tracker-backup.json";a.click();URL.revokeObjectURL(url)};
+$("importBtn").onclick=()=>$("importFile").click();$("importFile").onchange=async e=>{let f=e.target.files[0];if(!f)return;try{let imported=JSON.parse(await f.text());if(!imported||typeof imported!=="object")throw Error();if(confirm("Import this backup? Existing tracker data will be replaced.")){data=imported;start=data._start||todayISO();persist();render();$("saveStatus").textContent="Backup imported."}}catch(err){alert("That file could not be read as a tracker backup.")}e.target.value=""};
+
+// Live clock and local-time study reminders. Browser reminders run while this page is open.
+const reminderTimes = [
+  ["08:15","Mathematics","Start your 75-minute maths session."],
+  ["09:45","Java learning","Study today's Java topic."],
+  ["11:00","Coding practice","Solve a Java problem independently."],
+  ["11:45","Typing practice","Practise typing and record WPM/accuracy."],
+  ["13:00","English communication","Listen, repeat and speak aloud."],
+  ["13:30","DSA practice","Work on a problem related to today's Java topic."],
+  ["14:15","Career technology","Practise Git/GitHub, SQL or your project."],
+  ["18:30","Mathematics revision","Review and correct today's maths mistakes."],
+  ["18:50","Java revision","Rewrite a solution without looking at notes."],
+  ["20:00","Speaking and daily review","Explain today's learning and plan tomorrow."]
+];
+let lastReminderMinute = "";
+function updateClock(){
+  const now = new Date();
+  const dateEl = document.getElementById("liveDate");
+  const clockEl = document.getElementById("liveClock");
+  if(clockEl) clockEl.textContent = now.toLocaleTimeString([], {hour:"2-digit",minute:"2-digit",second:"2-digit"});
+  if(dateEl) dateEl.textContent = now.toLocaleDateString([], {weekday:"long",year:"numeric",month:"long",day:"numeric"});
+  const hhmm = `${String(now.getHours()).padStart(2,"0")}:${String(now.getMinutes()).padStart(2,"0")}`;
+  const minuteKey = `${todayISO()} ${hhmm}`;
+  if(document.getElementById("remindersToggle")?.value === "on" && minuteKey !== lastReminderMinute){
+    const item = reminderTimes.find(x=>x[0]===hhmm);
+    if(item){lastReminderMinute=minuteKey;sendReminder(item[1],item[2]);}
+  }
+}
+function reminderPrefs(){try{return JSON.parse(localStorage.getItem("myGrowthTracker.reminders")||'{"enabled":false,"sound":true}')}catch{return {enabled:false,sound:true}}}
+function saveReminderPrefs(){localStorage.setItem("myGrowthTracker.reminders",JSON.stringify({enabled:document.getElementById("remindersToggle").value==="on",sound:document.getElementById("soundToggle").value==="on"}));updateReminderStatus()}
+function updateReminderStatus(){
+  const enabled=document.getElementById("remindersToggle").value==="on";
+  document.getElementById("reminderStatus").textContent=enabled?"Reminders on":"Reminders off";
+  document.getElementById("reminderHelp").textContent=enabled
+    ? (("Notification" in window && Notification.permission==="granted")?"Notifications are allowed. Keep this page open at reminder times.":"Click “Enable reminders” and allow notifications when your browser asks. Keep this page open.")
+    : "Reminders are off. Turn them on when you are ready.";
+}
+function beep(){
+  try{
+    const Ctx=window.AudioContext||window.webkitAudioContext;
+    if(!Ctx)return;
+    const ctx=new Ctx(), osc=ctx.createOscillator(), gain=ctx.createGain();
+    osc.type="sine";osc.frequency.value=880;gain.gain.value=0.12;
+    osc.connect(gain);gain.connect(ctx.destination);osc.start();
+    setTimeout(()=>{osc.stop();ctx.close()},450);
+  }catch(e){}
+}
+function sendReminder(title,body){
+  const prefs=reminderPrefs();
+  if(prefs.sound)beep();
+  if("Notification" in window && Notification.permission==="granted"){
+    try{new Notification("Study reminder: "+title,{body,tag:"growth-tracker-"+title,renotify:false})}catch(e){}
+  }
+  const help=document.getElementById("reminderHelp");
+  if(help)help.textContent="Reminder triggered: "+title+" — "+body;
+}
+document.getElementById("enableRemindersBtn").addEventListener("click",async()=>{
+  if(!("Notification" in window)){document.getElementById("reminderHelp").textContent="This browser does not support notifications. The on-page clock still works.";return}
+  try{
+    const permission=await Notification.requestPermission();
+    if(permission==="granted"){
+      document.getElementById("remindersToggle").value="on";saveReminderPrefs();
+      document.getElementById("reminderHelp").textContent="Notifications enabled. Keep this page open for scheduled reminders.";
+      new Notification("Growth Tracker reminders enabled",{body:"You'll be reminded at your scheduled study times while this page is open."});
+    }else{
+      document.getElementById("reminderHelp").textContent="Notifications were not allowed. Check your browser's site settings and allow notifications.";
+    }
+  }catch(e){document.getElementById("reminderHelp").textContent="Could not request notification permission in this browser."}
+});
+document.getElementById("remindersToggle").addEventListener("change",()=>{
+  saveReminderPrefs();
+  if(document.getElementById("remindersToggle").value==="on" && "Notification" in window && Notification.permission!=="granted"){
+    document.getElementById("reminderHelp").textContent="Click “Enable reminders” and allow notifications to receive desktop messages.";
+  }
+});
+document.getElementById("soundToggle").addEventListener("change",saveReminderPrefs);
+document.getElementById("testReminderBtn").addEventListener("click",()=>{
+  const prefs=reminderPrefs();if(prefs.sound)beep();
+  if("Notification" in window && Notification.permission==="granted")new Notification("Test study reminder",{body:"Your Growth Tracker reminder is working."});
+  document.getElementById("reminderHelp").textContent="Test reminder sent. If no desktop message appears, check browser notification permissions.";
+});
+document.getElementById("testSoundBtn").addEventListener("click",()=>{beep();document.getElementById("reminderHelp").textContent="Test sound played (if your browser allows audio)."});
+// Focus season timer
+let seasonEndsAt=0, seasonRemaining=0, seasonInterval=null, seasonRunning=false, seasonAlerted=false;
+const seasonKey="myGrowthTracker.seasonSettings";
+function loadSeasonSettings(){try{const x=JSON.parse(localStorage.getItem(seasonKey)||"{}");if(x.current)$("seasonName").value=x.current;if(x.next)$("nextSeasonName").value=x.next;if(x.minutes)$("seasonMinutes").value=x.minutes;}catch(e){}}
+function saveSeasonSettings(){localStorage.setItem(seasonKey,JSON.stringify({current:$("seasonName").value,next:$("nextSeasonName").value,minutes:$("seasonMinutes").value}));}
+function seasonDisplay(){let secs=Math.max(0,Math.ceil(seasonRemaining/1000));$("seasonCountdown").textContent=String(Math.floor(secs/60)).padStart(2,"0")+":"+String(secs%60).padStart(2,"0");}
+function seasonTick(){if(!seasonRunning)return;seasonRemaining=seasonEndsAt-Date.now();seasonDisplay();if(seasonRemaining<=0){seasonRunning=false;clearInterval(seasonInterval);seasonInterval=null;seasonRemaining=0;seasonDisplay();$("seasonStatus").textContent="Completed";const current=$("seasonName").value.trim()||"Current season",next=$("nextSeasonName").value.trim()||"next season";$("seasonMessage").textContent=current+" completed. Please move to the next season: "+next+".";beep();if("Notification" in window&&Notification.permission==="granted")new Notification("Season complete — move to the next season",{body:current+" finished. Next: "+next+"."});if("speechSynthesis" in window){let u=new SpeechSynthesisUtterance(current+" completed. Please move to the next season: "+next);speechSynthesis.speak(u);}}}
+$("startSeasonBtn").onclick=()=>{saveSeasonSettings();if(seasonRunning)return; if(seasonRemaining<=0)seasonRemaining=Math.max(1,Number($("seasonMinutes").value)||45)*60000;seasonEndsAt=Date.now()+seasonRemaining;seasonRunning=true;seasonAlerted=false;$("seasonStatus").textContent="Running";$("seasonMessage").textContent="Focused on: "+($("seasonName").value||"Study season");clearInterval(seasonInterval);seasonInterval=setInterval(seasonTick,250);seasonTick();};
+$("pauseSeasonBtn").onclick=()=>{if(seasonRunning){seasonRemaining=Math.max(0,seasonEndsAt-Date.now());seasonRunning=false;clearInterval(seasonInterval);seasonInterval=null;$("seasonStatus").textContent="Paused";seasonDisplay();}};
+$("resetSeasonBtn").onclick=()=>{seasonRunning=false;clearInterval(seasonInterval);seasonInterval=null;seasonRemaining=Math.max(1,Number($("seasonMinutes").value)||45)*60000;seasonDisplay();$("seasonStatus").textContent="Ready";$("seasonMessage").textContent="Timer reset for "+($("seasonName").value||"your next season")+".";};
+$("seasonMinutes").onchange=()=>{if(!seasonRunning){seasonRemaining=Math.max(1,Number($("seasonMinutes").value)||45)*60000;seasonDisplay();}saveSeasonSettings();};$("seasonName").onchange=saveSeasonSettings;$("nextSeasonName").onchange=saveSeasonSettings;loadSeasonSettings();seasonRemaining=Math.max(1,Number($("seasonMinutes").value)||45)*60000;seasonDisplay();
+// Daily midnight backup download; browsers cannot send mail without an authenticated service.
+function exportGrowthBackup(){collect();let blob=new Blob([JSON.stringify({backupName:"Growth Level",exportedAt:new Date().toISOString(),tracker:data},null,2)],{type:"application/json"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="Growth-Level-"+todayISO()+".json";document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1500);}
+function backupSettings(){try{return JSON.parse(localStorage.getItem("myGrowthTracker.backupSettings")||'{"enabled":false,"email":""}')}catch(e){return {enabled:false,email:""}}}
+function saveBackupSettings(){const v={enabled:$("autoBackupToggle").value==="on",email:$("backupEmail").value.trim()};localStorage.setItem("myGrowthTracker.backupSettings",JSON.stringify(v));$("backupStatus").textContent=v.enabled?"Midnight download on":"Automatic download off";$("backupHelp").textContent=v.enabled?"Daily backup download is enabled. Keep this page open at midnight. Email is saved for future integration but no email is sent by this local page.":"Automatic backup download is off.";}
+const bs=backupSettings();$("autoBackupToggle").value=bs.enabled?"on":"off";$("backupEmail").value=bs.email||"";$("backupStatus").textContent=bs.enabled?"Midnight download on":"Automatic download off";$("saveBackupSettings").onclick=saveBackupSettings;$("backupNowBtn").onclick=exportGrowthBackup;
+let lastBackupDate="";function checkMidnightBackup(){const now=new Date(),date=todayISO(),b=backupSettings();if(b.enabled&&now.getHours()===0&&now.getMinutes()===0&&lastBackupDate!==date){lastBackupDate=date;exportGrowthBackup();$("backupHelp").textContent="Growth Level backup downloaded for "+date+". This is a local download, not an email.";if(b.email&&"Notification" in window&&Notification.permission==="granted")new Notification("Growth Level backup downloaded",{body:"Your backup file was downloaded. It has not been emailed."});}}
+
+const savedReminderPrefs=reminderPrefs();
+document.getElementById("remindersToggle").value=savedReminderPrefs.enabled?"on":"off";
+document.getElementById("soundToggle").value=savedReminderPrefs.sound?"on":"off";
+updateReminderStatus();
+updateClock();
+setInterval(updateClock,1000);
+setInterval(checkMidnightBackup,10000);
+
+load();if(!data._start){data._start=todayISO();start=todayISO();persist()}render();
+// Curated resources are links to real providers; availability and pricing can change.
+const resourceCatalog = [
+ {c:'Mathematics · school foundations',t:'Khan Academy — Grade 6 maths (Free)',u:'https://www.khanacademy.org/math/cc-sixth-grade-math',d:'Free lessons and practice: arithmetic, ratios, expressions, geometry and statistics'},
+ {c:'Mathematics · school foundations',t:'NCERT official textbooks (Free)',u:'https://ncert.nic.in/textbook.php',d:'Official Indian school maths textbooks; select Class 6'},
+ {c:'Mathematics · school foundations',t:'DIKSHA national learning platform (Free)',u:'https://diksha.gov.in/',d:'Indian school learning content; availability varies by course and state'},
+ {c:'Mathematics · visual explanations',t:'Math Antics (Free videos)',u:'https://www.youtube.com/@mathantics',d:'Clear visual explanations for arithmetic, fractions, percentages and geometry'},
+ {c:'Mathematics · practice',t:'NRICH Mathematics (Free)',u:'https://nrich.maths.org/',d:'Problem-solving tasks and mathematical reasoning'},
+ {c:'Java · start here',t:'Dev.java — official Java learning (Free)',u:'https://dev.java/learn/',d:'Official Java tutorials and learning pathways'},
+ {c:'Java · reference',t:'Oracle Java Tutorials (Free)',u:'https://docs.oracle.com/javase/tutorial/',d:'Reference material; some tutorials are older, so use Dev.java first'},
+ {c:'Java · practice',t:'W3Schools Java (Free learning pages)',u:'https://www.w3schools.com/java/',d:'Beginner explanations and examples; use an online compiler to test code'},
+ {c:'Java · run code',t:'OneCompiler Java (Free)',u:'https://onecompiler.com/java',d:'Run short Java programs in a browser without installing software'},
+ {c:'Java · video',t:'Bro Code Java course (Free videos)',u:'https://www.youtube.com/@BroCodez',d:'Video course option; practise by typing the code yourself'},
+ {c:'Coding / DSA · practice',t:'HackerRank — Java and problem solving (Free practice)',u:'https://www.hackerrank.com/domains/java',d:'Java exercises; account may be required'},
+ {c:'Coding / DSA · practice',t:'LeetCode array problems (Free problems available)',u:'https://leetcode.com/tag/array/',d:'Start with Easy problems; some features/content are paid, so skip Premium'},
+ {c:'Coding / DSA · concepts',t:'OpenDSA (Free, open educational resource)',u:'https://opendsa.org/',d:'Data structures, algorithms, visualisations and exercises'},
+ {c:'Coding / DSA · visual',t:'VisuAlgo (Free visualisations)',u:'https://visualgo.net/en',d:'Visualise sorting, searching, trees, graphs and other algorithms'},
+ {c:'Coding / DSA · concepts',t:'GeeksforGeeks data structures (Free articles available)',u:'https://www.geeksforgeeks.org/data-structures/',d:'Reference explanations and examples; avoid paid courses unless you choose them'},
+ {c:'English · speaking',t:'British Council LearnEnglish Speaking (Free lessons)',u:'https://learnenglish.britishcouncil.org/skills/speaking',d:'Speaking practice by level with useful everyday situations'},
+ {c:'English · listening',t:'BBC Learning English (Free)',u:'https://www.bbc.co.uk/learningenglish',d:'Listening, pronunciation, vocabulary and grammar'},
+ {c:'English · grammar',t:'Cambridge English — learning activities (Free)',u:'https://www.cambridgeenglish.org/learning-english/activities-for-learners/',d:'Short activities to practise English skills'},
+ {c:'English · daily practice',t:'VOA Learning English (Free)',u:'https://learningenglish.voanews.com/',d:'Slower spoken news and listening practice'},
+ {c:'Typing · accuracy',t:'Keybr (Free core practice)',u:'https://www.keybr.com/',d:'Build keyboard accuracy and finger control'},
+ {c:'Typing · speed test',t:'Monkeytype (Free core typing tests)',u:'https://monkeytype.com/',d:'Track words per minute and accuracy; keep accuracy above speed'},
+ {c:'Typing · lessons',t:'TypingClub (Free lessons available)',u:'https://www.typingclub.com/',d:'Structured touch-typing lessons; some school/extra features may vary'},
+ {c:'Career · Git',t:'Pro Git book (Free online)',u:'https://git-scm.com/book/en/v2',d:'Free complete book for Git fundamentals and collaboration'},
+ {c:'Career · GitHub',t:'GitHub Skills (Free courses)',u:'https://skills.github.com/',d:'Hands-on repositories, commits, branches, pull requests and Pages'},
+ {c:'Career · GitHub',t:'GitHub Docs — Pages (Free)',u:'https://docs.github.com/en/pages',d:'Official deployment guide for publishing a static site'},
+ {c:'Career · SQL',t:'SQLBolt (Free interactive lessons)',u:'https://sqlbolt.com/',d:'Learn SELECT, filtering, sorting, joins and table operations interactively'},
+ {c:'Career · SQL',t:'PostgreSQL official tutorial (Free)',u:'https://www.postgresql.org/docs/current/tutorial.html',d:'Official relational database and SQL tutorial'},
+ {c:'Career · project',t:'freeCodeCamp (Free curriculum)',u:'https://www.freecodecamp.org/learn/',d:'Projects and lessons; choose relevant free modules rather than trying everything'},
+ {c:'Career · version control',t:'Atlassian Git tutorials (Free)',u:'https://www.atlassian.com/git/tutorials',d:'Clear Git workflow explanations and examples'},
+ {c:'Science & space news',t:'NASA News (Free)',u:'https://www.nasa.gov/news/',d:'Primary source for NASA missions and science announcements'},
+ {c:'Science & space news',t:'European Space Agency News (Free)',u:'https://www.esa.int/Newsroom',d:'Space science, missions and innovation'},
+ {c:'Science news',t:'CERN News (Free)',u:'https://home.cern/news',d:'Particle physics and research updates'},
+ {c:'Mathematics research',t:'arXiv — recent mathematics (Free)',u:'https://arxiv.org/list/math/recent',d:'Open research preprints; advanced reading, not a beginner syllabus'},
+ {c:'Mathematics news',t:'American Mathematical Society (Free news)',u:'https://www.ams.org/news',d:'Mathematics research and community news'},
+ {c:'World affairs',t:'Reuters World (Free articles may vary)',u:'https://www.reuters.com/world/',d:'World reporting; access limits may apply by region'},
+ {c:'World affairs',t:'UN News (Free)',u:'https://news.un.org/',d:'Primary-source updates on international affairs and humanitarian issues'},
+ {c:'Sports news',t:'BBC Sport (Free articles may vary)',u:'https://www.bbc.com/sport',d:'Sports news, results and explainers; coverage varies by region'},
+ {c:'Sports data',t:'Olympics official site (Free)',u:'https://olympics.com/',d:'Official Olympic sports, athlete and event information'}
+];
+function renderResources(q=''){const target=$('resourceResults');if(!target)return;const f=q.trim().toLowerCase();const rows=resourceCatalog.filter(x=>!f||(x.c+' '+x.t+' '+x.d).toLowerCase().includes(f));target.innerHTML=rows.map(x=>`<div class="resourceitem"><strong>${escapeHTML(x.c)}</strong><a href="${x.u}" target="_blank" rel="noopener noreferrer">${escapeHTML(x.t)}</a><small>${escapeHTML(x.d)}</small></div>`).join('')||'<p class="sub">No matching resource. Try another keyword.</p>'}
+const quizBank=[
+ {c:'Mathematics',q:'What is the HCF of 12 and 18?',a:['2','6','9','36'],correct:1,why:'6 is the greatest number that divides both 12 and 18.'},
+ {c:'Mathematics',q:'What is 25% of 80?',a:['10','15','20','25'],correct:2,why:'25% is one quarter; 80 ÷ 4 = 20.'},
+ {c:'Java',q:'In Java, what is the index of the first element of an array?',a:['0','1','-1','It varies'],correct:0,why:'Java arrays use zero-based indexing.'},
+ {c:'Java',q:'Which property gives the size of a Java array?',a:['size()','length','count','length()'],correct:1,why:'For arrays, use the length field, for example arr.length.'},
+ {c:'DSA',q:'What is the typical time complexity of scanning an unsorted array once?',a:['O(1)','O(log n)','O(n)','O(n²)'],correct:2,why:'In the worst case, every element is examined once.'},
+ {c:'English',q:'Choose the grammatically correct sentence.',a:['She go to work.','She goes to work.','She going to work.','She gone to work.'],correct:1,why:'With he/she/it in the simple present, the verb typically takes -s.'},
+ {c:'Career',q:'Which Git command shows the current working-tree status?',a:['git status','git showall','git check','git current'],correct:0,why:'git status reports changed, staged, and untracked files.'}
+];
+function renderQuiz(){const day=dayNumber();const qs=[quizBank[(day-1)%quizBank.length],quizBank[day%quizBank.length],quizBank[(day+1)%quizBank.length]];$('quizArea').innerHTML=qs.map((q,i)=>`<div class="quizq" data-q="${i}"><strong>${i+1}. ${escapeHTML(q.q)}</strong>${q.a.map((a,j)=>`<label><input type="radio" name="quiz-${i}" value="${j}">${escapeHTML(a)}</label>`).join('')}<div class="sub" id="quizwhy-${i}" hidden></div></div>`).join('');$('quizProgress').textContent='3 questions';$('quizFeedback').textContent='';$('gradeQuizBtn').onclick=()=>{let score=0,answered=0;qs.forEach((q,i)=>{const el=document.querySelector(`input[name="quiz-${i}"]:checked`);const why=$('quizwhy-'+i);why.hidden=false;if(el){answered++;if(Number(el.value)===q.correct)score++;why.textContent=(Number(el.value)===q.correct?'Correct. ':'Not quite. ')+q.why;why.style.color=Number(el.value)===q.correct?'#0f8b64':'#b45309'}else{why.textContent='Not answered. '+q.why;why.style.color='var(--muted)'}});$('quizProgress').textContent=`${score}/3`; $('quizFeedback').textContent=`You answered ${answered} of 3 questions; score ${score}/3. Review explanations, then try again.`;let r=record();r.quiz={date:selected,score,total:3,answered};persist()};$('resetQuizBtn').onclick=renderQuiz}
+const newsFeeds={
+ world:'https://news.google.com/rss/headlines/section/topic/WORLD?hl=en-IN&gl=IN&ceid=IN:en',
+ science:'https://www.nasa.gov/feed/',
+ technology:'https://techcrunch.com/feed/',
+ math:'https://export.arxiv.org/rss/math',
+ sports:'https://news.google.com/rss/headlines/section/topic/SPORTS?hl=en-IN&gl=IN&ceid=IN:en'
+};
+async function loadNews(){const category=$('newsCategory').value;const status=$('newsStatus'),out=$('newsResults');status.textContent='Loading…';out.innerHTML='<p class="sub">Fetching online headlines…</p>';$('newsUpdated').textContent='Requesting live feed…';try{const feed=newsFeeds[category];const api='https://api.rss2json.com/v1/api.json?rss_url='+encodeURIComponent(feed);const controller=new AbortController();const timeout=setTimeout(()=>controller.abort(),12000);const res=await fetch(api,{signal:controller.signal,cache:'no-store'});clearTimeout(timeout);if(!res.ok)throw new Error('Feed service returned HTTP '+res.status);const json=await res.json();if(json.status!=='ok'||!Array.isArray(json.items))throw new Error(json.message||'Feed data was unavailable');const items=json.items.slice(0,8);if(!items.length)throw new Error('No articles were returned for this feed');out.innerHTML=items.map(item=>{const title=escapeHTML(item.title||'Untitled article'),url=String(item.link||'#');const safeUrl=/^https?:\/\//i.test(url)?url:'#';const date=item.pubDate?new Date(item.pubDate):null;const dateText=date&&!isNaN(date)?date.toLocaleString(): 'Publication date not supplied';const source=escapeHTML(item.author||item.categories?.[0]||category);const summary=escapeHTML((item.description||'').replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').slice(0,220));return `<article class="newsitem"><h4><a href="${safeUrl}" target="_blank" rel="noopener noreferrer">${title}</a></h4><small>${dateText} · ${source}</small><p>${summary||'Open the original article to read its details.'}</p><a href="${safeUrl}" target="_blank" rel="noopener noreferrer">Read original source</a></article>`}).join('');status.textContent='Online feed loaded';$('newsUpdated').textContent=`Fetched ${items.length} article(s) at ${new Date().toLocaleString()}. Article dates are supplied by the source feed. Summaries are excerpts, not independent fact-checks.`}catch(err){status.textContent='Feed unavailable';out.innerHTML=`<div class="note"><strong>Could not load live headlines.</strong><p>${escapeHTML(err.name==='AbortError'?'The request timed out.':'The feed service or source may be unavailable, blocked, or rate-limited.')}</p><p>No sample headlines have been substituted. Open the trusted source links above or try again later.</p></div>`;$('newsUpdated').textContent='Last attempt: '+new Date().toLocaleString()+'. No live results were loaded.'}}
+$('loadNewsBtn').onclick=loadNews;$('resourceSearch').oninput=e=>renderResources(e.target.value);renderResources();renderQuiz();
+
+</script>
+</body>
+</html>
